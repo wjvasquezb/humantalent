@@ -25,11 +25,13 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.adempiere.base.IModelFactory;
+import org.compiere.model.MEntityType;
+import org.compiere.model.MTable;
 import org.compiere.model.PO;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 
-import ve.net.dcs.info.HTFeatures;
+import ve.net.dcs.info.HTPluginFeatures;
 
 /**
  * Generic Model Factory for Human Talent Plugin
@@ -46,15 +48,24 @@ public class HTModelFactory implements IModelFactory {
 	@Override
 	public Class<?> getClass(String tableName) {
 
-		if (tableName == null || !tableName.startsWith(prefixTable))
+		if (tableName == null)
+			return null;
+
+		MTable table = MTable.get(Env.getCtx(), tableName);
+		String entityType = table.getEntityType();
+
+		MEntityType et = MEntityType.get(Env.getCtx(), entityType);
+		String modelPackage = et.getModelPackage();
+
+		if (!entityType.equals(HTPluginFeatures.entityType))
 			return null;
 
 		Class<?> clazz = null;
 		try {
-			clazz = Class.forName(String.format("%s.%s%s", HTFeatures.modelPackage, prefixModel, tableName.substring(prefixTable.length())));
+			clazz = Class.forName(String.format("%s.%s%s", modelPackage, prefixModel, tableName.substring(prefixTable.length())));
 		} catch (Exception e) {
 			if (log.isLoggable(Level.WARNING))
-				log.warning(String.format("Plugin: %s -> Class not found for table: %s", HTFeatures.id, tableName));
+				log.warning(String.format("Plugin: %s -> Class not found for table: %s", HTPluginFeatures.id, tableName));
 		}
 
 		return clazz;
@@ -75,7 +86,7 @@ public class HTModelFactory implements IModelFactory {
 			model = (PO) constructor.newInstance(new Object[] { Env.getCtx(), new Integer(Record_ID), trxName });
 		} catch (Exception e) {
 			if (log.isLoggable(Level.WARNING))
-				log.warning(String.format("Plugin: %s -> Class can not be instantiated for table: %s", HTFeatures.id, tableName));
+				log.warning(String.format("Plugin: %s -> Class can not be instantiated for table: %s", HTPluginFeatures.id, tableName));
 		}
 
 		return model;
@@ -96,7 +107,7 @@ public class HTModelFactory implements IModelFactory {
 			model = (PO) constructor.newInstance(new Object[] { Env.getCtx(), rs, trxName });
 		} catch (Exception e) {
 			if (log.isLoggable(Level.WARNING))
-				log.warning(String.format("Plugin: %s -> Class can not be instantiated for table: %s", HTFeatures.id, tableName));
+				log.warning(String.format("Plugin: %s -> Class can not be instantiated for table: %s", HTPluginFeatures.id, tableName));
 		}
 
 		return model;
