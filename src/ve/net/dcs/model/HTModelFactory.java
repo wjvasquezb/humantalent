@@ -28,6 +28,7 @@ import org.adempiere.base.IModelFactory;
 import org.compiere.model.MEntityType;
 import org.compiere.model.MTable;
 import org.compiere.model.PO;
+import org.compiere.util.CCache;
 import org.compiere.util.CLogger;
 import org.compiere.util.Env;
 
@@ -42,6 +43,8 @@ import ve.net.dcs.info.HTPluginFeatures;
 public class HTModelFactory implements IModelFactory {
 
 	private final static CLogger log = CLogger.getCLogger(HTModelFactory.class);
+	private static CCache<String, Class<?>> cache = new CCache<String, Class<?>>("PO_Class", 20);
+
 	private final static String prefixTable = "HT_";
 	private final static String prefixModel = "MHT";
 
@@ -51,21 +54,26 @@ public class HTModelFactory implements IModelFactory {
 		if (tableName == null)
 			return null;
 
-		MTable table = MTable.get(Env.getCtx(), tableName);
-		String entityType = table.getEntityType();
+		Class<?> clazz = cache.get(tableName);
 
-		MEntityType et = MEntityType.get(Env.getCtx(), entityType);
-		String modelPackage = et.getModelPackage();
+		if (clazz == null) {
 
-		if (!entityType.equals(HTPluginFeatures.entityType))
-			return null;
+			MTable table = MTable.get(Env.getCtx(), tableName);
+			String entityType = table.getEntityType();
 
-		Class<?> clazz = null;
-		try {
-			clazz = Class.forName(String.format("%s.%s%s", modelPackage, prefixModel, tableName.substring(prefixTable.length())));
-		} catch (Exception e) {
-			if (log.isLoggable(Level.WARNING))
-				log.warning(String.format("Plugin: %s -> Class not found for table: %s", HTPluginFeatures.id, tableName));
+			if (!entityType.equals(HTPluginFeatures.entityType))
+				return null;
+
+			MEntityType et = MEntityType.get(Env.getCtx(), entityType);
+			String modelPackage = et.getModelPackage();
+
+			try {
+				clazz = Class.forName(String.format("%s.%s%s", modelPackage, prefixModel, tableName.substring(prefixTable.length())));
+				cache.put(tableName, clazz);
+			} catch (Exception e) {
+				if (log.isLoggable(Level.WARNING))
+					log.warning(String.format("Plugin: %s -> Class not found for table: %s", HTPluginFeatures.id, tableName));
+			}
 		}
 
 		return clazz;

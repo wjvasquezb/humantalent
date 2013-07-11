@@ -33,7 +33,7 @@ public class X_HT_EvaluationEmployee extends PO implements I_HT_EvaluationEmploy
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 20130709L;
+	private static final long serialVersionUID = 20130711L;
 
     /** Standard Constructor */
     public X_HT_EvaluationEmployee (Properties ctx, int HT_EvaluationEmployee_ID, String trxName)
@@ -43,9 +43,9 @@ public class X_HT_EvaluationEmployee extends PO implements I_HT_EvaluationEmploy
         {
 			setC_BPartner_ID (0);
 			setDate1 (new Timestamp( System.currentTimeMillis() ));
-			setHR_Job_ID (0);
 			setHT_EvaluationEmployee_ID (0);
 			setHT_Evaluation_ID (0);
+			setHT_Occupation_ID (0);
 			setObjective (null);
 			setPercentage (Env.ZERO);
 			setSalary (Env.ZERO);
@@ -159,31 +159,6 @@ public class X_HT_EvaluationEmployee extends PO implements I_HT_EvaluationEmploy
 		return (String)get_Value(COLUMNNAME_Description);
 	}
 
-	public org.eevolution.model.I_HR_Job getHR_Job() throws RuntimeException
-    {
-		return (org.eevolution.model.I_HR_Job)MTable.get(getCtx(), org.eevolution.model.I_HR_Job.Table_Name)
-			.getPO(getHR_Job_ID(), get_TrxName());	}
-
-	/** Set Payroll Job.
-		@param HR_Job_ID Payroll Job	  */
-	public void setHR_Job_ID (int HR_Job_ID)
-	{
-		if (HR_Job_ID < 1) 
-			set_Value (COLUMNNAME_HR_Job_ID, null);
-		else 
-			set_Value (COLUMNNAME_HR_Job_ID, Integer.valueOf(HR_Job_ID));
-	}
-
-	/** Get Payroll Job.
-		@return Payroll Job	  */
-	public int getHR_Job_ID () 
-	{
-		Integer ii = (Integer)get_Value(COLUMNNAME_HR_Job_ID);
-		if (ii == null)
-			 return 0;
-		return ii.intValue();
-	}
-
 	/** Set Evaluation Employee.
 		@param HT_EvaluationEmployee_ID Evaluation Employee	  */
 	public void setHT_EvaluationEmployee_ID (int HT_EvaluationEmployee_ID)
@@ -238,6 +213,31 @@ public class X_HT_EvaluationEmployee extends PO implements I_HT_EvaluationEmploy
 	public int getHT_Evaluation_ID () 
 	{
 		Integer ii = (Integer)get_Value(COLUMNNAME_HT_Evaluation_ID);
+		if (ii == null)
+			 return 0;
+		return ii.intValue();
+	}
+
+	public ve.net.dcs.model.I_HT_Occupation getHT_Occupation() throws RuntimeException
+    {
+		return (ve.net.dcs.model.I_HT_Occupation)MTable.get(getCtx(), ve.net.dcs.model.I_HT_Occupation.Table_Name)
+			.getPO(getHT_Occupation_ID(), get_TrxName());	}
+
+	/** Set Occupation.
+		@param HT_Occupation_ID Occupation	  */
+	public void setHT_Occupation_ID (int HT_Occupation_ID)
+	{
+		if (HT_Occupation_ID < 1) 
+			set_Value (COLUMNNAME_HT_Occupation_ID, null);
+		else 
+			set_Value (COLUMNNAME_HT_Occupation_ID, Integer.valueOf(HT_Occupation_ID));
+	}
+
+	/** Get Occupation.
+		@return Occupation	  */
+	public int getHT_Occupation_ID () 
+	{
+		Integer ii = (Integer)get_Value(COLUMNNAME_HT_Occupation_ID);
 		if (ii == null)
 			 return 0;
 		return ii.intValue();

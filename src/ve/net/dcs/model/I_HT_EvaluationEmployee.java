@@ -32,7 +32,7 @@ public interface I_HT_EvaluationEmployee
     /** TableName=HT_EvaluationEmployee */
     public static final String Table_Name = "HT_EvaluationEmployee";
 
-    /** AD_Table_ID=1000019 */
+    /** AD_Table_ID=1000021 */
     public static final int Table_ID = MTable.getTable_ID(Table_Name);
 
     KeyNamePair Model = new KeyNamePair(Table_ID, Table_Name);
@@ -134,17 +134,6 @@ public interface I_HT_EvaluationEmployee
 	  */
 	public String getDescription();
 
-    /** Column name HR_Job_ID */
-    public static final String COLUMNNAME_HR_Job_ID = "HR_Job_ID";
-
-	/** Set Payroll Job	  */
-	public void setHR_Job_ID (int HR_Job_ID);
-
-	/** Get Payroll Job	  */
-	public int getHR_Job_ID();
-
-	public org.eevolution.model.I_HR_Job getHR_Job() throws RuntimeException;
-
     /** Column name HT_EvaluationEmployee_ID */
     public static final String COLUMNNAME_HT_EvaluationEmployee_ID = "HT_EvaluationEmployee_ID";
 
@@ -173,6 +162,17 @@ public interface I_HT_EvaluationEmployee
 	public int getHT_Evaluation_ID();
 
 	public ve.net.dcs.model.I_HT_Evaluation getHT_Evaluation() throws RuntimeException;
+
+    /** Column name HT_Occupation_ID */
+    public static final String COLUMNNAME_HT_Occupation_ID = "HT_Occupation_ID";
+
+	/** Set Occupation	  */
+	public void setHT_Occupation_ID (int HT_Occupation_ID);
+
+	/** Get Occupation	  */
+	public int getHT_Occupation_ID();
+
+	public ve.net.dcs.model.I_HT_Occupation getHT_Occupation() throws RuntimeException;
 
     /** Column name IsActive */
     public static final String COLUMNNAME_IsActive = "IsActive";
