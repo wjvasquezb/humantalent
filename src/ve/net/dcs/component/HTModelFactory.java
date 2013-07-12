@@ -46,7 +46,8 @@ public class HTModelFactory implements IModelFactory {
 	private static CCache<String, Class<?>> cache = new CCache<String, Class<?>>("PO_Class", 20);
 
 	private final static String prefixTable = "HT_";
-	private final static String prefixModel = "MHT";
+	private final static String prefixModel = "M";
+	private final static String prefixModelDefault = "X_";
 
 	@Override
 	public Class<?> getClass(String tableName) {
@@ -67,12 +68,19 @@ public class HTModelFactory implements IModelFactory {
 			MEntityType et = MEntityType.get(Env.getCtx(), entityType);
 			String modelPackage = et.getModelPackage();
 
+			String classNameFormat = "%s.%s%s";
+
 			try {
-				clazz = Class.forName(String.format("%s.%s%s", modelPackage, prefixModel, tableName.substring(prefixTable.length())));
+				clazz = Class.forName(String.format(classNameFormat, modelPackage, prefixModel, tableName.replace("_", "")));
 				cache.put(tableName, clazz);
-			} catch (Exception e) {
-				if (log.isLoggable(Level.WARNING))
-					log.warning(String.format("Plugin: %s -> Class not found for table: %s", HTPluginFeatures.id, tableName));
+			} catch (Exception e1) {
+				try {
+					clazz = Class.forName(String.format(classNameFormat, modelPackage, prefixModelDefault, tableName));
+					cache.put(tableName, clazz);
+				} catch (Exception e2) {
+					if (log.isLoggable(Level.WARNING))
+						log.warning(String.format("Plugin: %s -> Class not found for table: %s", HTPluginFeatures.id, tableName));
+				}
 			}
 		}
 
