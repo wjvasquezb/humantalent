@@ -17,7 +17,7 @@
  * Contributor: Saúl Piña - spina@dcs.net.ve                                  *
  *****************************************************************************/
 
-package ve.net.dcs.model;
+package ve.net.dcs.component;
 
 import java.lang.reflect.Constructor;
 import java.sql.ResultSet;
