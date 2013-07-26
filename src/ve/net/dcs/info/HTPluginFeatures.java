@@ -8,7 +8,7 @@ public class HTPluginFeatures {
 	public static final String rootPackage = "ve.net.dcs";
 	public static final String modelPackage = rootPackage + ".model";
 	
-	public static final String entityType = "DCSHT";
+	public static final String entityType = "ve.net.dcs.HumanTalent";
 
 	public static final String id = "ve.net.dcs.HumanTalent";
 	public static final String name = "Human Talent";
