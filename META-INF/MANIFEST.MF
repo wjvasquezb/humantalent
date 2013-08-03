@@ -4,7 +4,7 @@ Bundle-Name: Human Talent
 Bundle-SymbolicName: ve.net.dcs.HumanTalent;singleton:=true
 Bundle-Version: 1.2.1.B
 Bundle-Vendor: Double Click Sistemas C.A.
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.adempiere.base;bundle-version="1.0.0",
  org.adempiere.base.process;bundle-version="1.0.0",
  org.adempiere.plugin.utils;bundle-version="0.0.0"
