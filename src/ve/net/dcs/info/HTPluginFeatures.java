@@ -15,6 +15,6 @@ public class HTPluginFeatures {
 	public static final String vendor = "Double Click Sistemas C.A.";
 	public static final String web = "http://dcs.net.ve";
 	
-	public static final String version = "1.2.2.B";
+	public static final String version = "1.2.3.B";
 
 }
