@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Human Talent
 Bundle-SymbolicName: ve.net.dcs.HumanTalent;singleton:=true
-Bundle-Version: 2.1.0
-Bundle-Vendor: Double Click Sistemas
+Bundle-Version: 5.1.0
+Bundle-Vendor: INGEINT SA
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.adempiere.base;bundle-version="1.0.0",
- org.adempiere.base.process;bundle-version="1.0.0",
- org.adempiere.plugin.utils;bundle-version="0.0.0"
+Require-Bundle: org.adempiere.base;bundle-version="5.1.0",
+ org.adempiere.base.process;bundle-version="5.1.0",
+ org.adempiere.plugin.utils;bundle-version="5.1.0"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/ve.net.dcs.component.HTModelFactory.xml
 Bundle-Activator: org.adempiere.plugin.utils.AdempiereActivator
