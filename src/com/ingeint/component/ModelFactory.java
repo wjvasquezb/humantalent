@@ -26,6 +26,8 @@
 package com.ingeint.component;
 
 import com.ingeint.base.CustomModelFactory;
+import com.ingeint.model.MHTPersonalRequisition;
+import com.ingeint.model.MHTPersonalRequisitionLine;
 
 /**
  * Model Factory
@@ -34,6 +36,8 @@ public class ModelFactory extends CustomModelFactory {
 
 	@Override
 	protected void initialize() {
+		registerTableModel(MHTPersonalRequisition.Table_Name, MHTPersonalRequisition.class);
+		registerTableModel(MHTPersonalRequisitionLine.Table_Name, MHTPersonalRequisitionLine.class);
 		// Register the models class to build
 		
 	}
