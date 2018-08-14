@@ -17,7 +17,6 @@ public class HTLoadProspect extends CustomProcess{
 	@Override
 	protected void prepare() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -25,7 +24,8 @@ public class HTLoadProspect extends CustomProcess{
 
 		MHTPersonalRequisition pr = new MHTPersonalRequisition(getCtx(), getRecord_ID(), get_TrxName());
 
-		StringBuffer sql = new StringBuffer("SELECT C_BPartner_ID, isemployee, ishrprospect , ht_career_id "
+		StringBuffer sql = new StringBuffer("SELECT C_BPartner_ID, isemployee, "
+				+ "ishrprospect , ht_career_id "
 				+ "FROM HR_Prospect "
 				+ "WHERE AD_Client_ID = ? AND HT_Career_id IN (");
 
@@ -38,11 +38,19 @@ public class HTLoadProspect extends CustomProcess{
 			sql.append(","+pr.getHT_Career3_ID());
 
 		sql.append(")");
+		
+		sql.append("AND C_BPartner_ID NOT IN (SELECT C_BPartner_ID "
+				+ "FROM HT_PersonalRequisitonLine "
+				+ "WHERE HT_PersonalRequisiton_ID = ? )");
+		
+		sql.append("AND currentSalary < ? ");
 
 		try
 		{
 			PreparedStatement pstmt = DB.prepareStatement(sql.toString(), get_TrxName());
 			pstmt.setInt(1, pr.getAD_Client_ID());
+			pstmt.setInt(2, pr.get_ID());
+			pstmt.setBigDecimal(3, pr.getEstimatedSalary());
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next())

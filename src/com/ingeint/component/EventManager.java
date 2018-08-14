@@ -24,8 +24,6 @@
 
 package com.ingeint.component;
 
-import org.adempiere.base.event.IEventTopics;
-
 import com.ingeint.base.CustomEventManager;
 
 /**
@@ -36,6 +34,5 @@ public class EventManager extends CustomEventManager {
 	@Override
 	protected void initialize() {
 		// Register the custom events handler to build
-		
-    }
+	}
 }

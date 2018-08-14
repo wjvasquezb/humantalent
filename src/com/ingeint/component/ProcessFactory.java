@@ -15,5 +15,7 @@ public class ProcessFactory extends CustomProcessFactory{
 	@Override
 	protected void initialize() {
 		registerProcess(com.ingeint.process.HTLoadProspect.class);
+		registerProcess(com.ingeint.process.CreateEmployee.class);
+		registerProcess(com.ingeint.process.NotifyExpireTestEmployee.class);
 	}
 }

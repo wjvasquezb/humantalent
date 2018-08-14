@@ -12,6 +12,6 @@ Require-Bundle: org.adempiere.base;bundle-version="5.1.0",
  zk;bundle-version="8.0.2"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/ve.net.dcs.component.HTModelFactory.xml, OSGI-INF/com.ingeint.component.ProcessFactory.xml, OSGI-INF/com.ingeint.component.ModelFactory.xml,
- OSGI-INF/com.ingeint.component.EventManager.xml
+ OSGI-INF/com.ingeint.component.EventManager.xml, OSGI-INF/com.ingeint.component.CalloutFactory.xml
 Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
 Import-Package: org.osgi.service.event;version="1.3.1"
