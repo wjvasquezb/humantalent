@@ -1,5 +1,6 @@
 package com.ingeint.process;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.logging.Level;
@@ -8,8 +9,10 @@ import org.adempiere.exceptions.AdempiereException;
 import org.compiere.model.MBPartner;
 import org.compiere.model.MRequest;
 import org.compiere.model.MSysConfig;
+import org.compiere.model.MUser;
 import org.compiere.model.Query;
 import org.compiere.process.ProcessInfoParameter;
+import org.compiere.util.Env;
 import org.eevolution.model.X_HR_Attribute;
 import org.eevolution.model.X_HR_Employee;
 import org.eevolution.model.X_HR_Payroll;
@@ -26,7 +29,10 @@ public class CreateEmployee extends CustomProcess {
 	String p_ContractType="";
 	Timestamp p_StartDate=null;
 	String p_HRegion = "";
-	
+	String p_email = "";
+	BigDecimal p_salary = Env.ZERO;
+	Boolean IsDirect = false;
+	Integer pC_Job_ID = 0;
 
 	@Override
 	protected void prepare() {
@@ -41,6 +47,14 @@ public class CreateEmployee extends CustomProcess {
 				p_StartDate = para[i].getParameterAsTimestamp();
 			else if (name.equals("HR_Region"))
 				p_HRegion = para[i].getParameterAsString();
+			else if (name.equals("EMail"))
+				p_email = para[i].getParameterAsString();
+			else if (name.equals("Salary"))
+				p_salary = para[i].getParameterAsBigDecimal();
+			else if (name.equals("IsDirect"))
+				IsDirect = para[i].getParameterAsBoolean();
+			else if (name.equals("HR_Job_ID"))
+				pC_Job_ID = para[i].getParameterAsInt();
 			else
 				log.log(Level.SEVERE, "Unknown Parameter: " + name);
 		}
@@ -49,19 +63,36 @@ public class CreateEmployee extends CustomProcess {
 	@Override
 	protected String doIt() throws Exception {
 		
-		MRequest req = new MRequest(getCtx(), getRecord_ID(), get_TrxName());
-		MHTPersonalRequisitionLine reqline = new MHTPersonalRequisitionLine(getCtx(), req.get_ValueAsInt("HT_PersonalRequisitonLine_ID"), get_TrxName());
-		MHTPersonalRequisition requisition = new MHTPersonalRequisition(getCtx(), reqline.getHT_PersonalRequisiton_ID(), get_TrxName());
-		MBPartner partner = new MBPartner(getCtx(), reqline.getC_BPartner_ID(), get_TrxName());
-		partner.setIsEmployee(true);
-		partner.set_ValueOfColumn("HT_PersonalRequisiton_ID", requisition.get_ID());
+		MBPartner partner = null;
+		MHTPersonalRequisitionLine reqline = null;
+		MHTPersonalRequisition requisition = null;
+		
+		if (!IsDirect) {
+			MRequest req = new MRequest(getCtx(), getRecord_ID(), get_TrxName());
+			reqline = new MHTPersonalRequisitionLine(getCtx(), req.get_ValueAsInt("HT_PersonalRequisitonLine_ID"), get_TrxName());
+			requisition = new MHTPersonalRequisition(getCtx(), reqline.getHT_PersonalRequisiton_ID(), get_TrxName());
+			partner = new MBPartner(getCtx(), reqline.getC_BPartner_ID(), get_TrxName());
+			partner.set_ValueOfColumn("HT_PersonalRequisiton_ID", requisition.get_ID());
+		} else {
+			partner = new MBPartner(getCtx(), getRecord_ID(), get_TrxName());
+		}
+		
+		partner.setIsEmployee(true);		
 		partner.set_ValueOfColumn("ContractType", p_ContractType);
 		partner.set_ValueOfColumn("IsHRProspect", false);
 		partner.set_ValueOfColumn("StartDate", p_StartDate);
 		partner.saveEx();
 		
+		MUser user = new MUser(partner);
+		user.setEMail(p_email);
+		user.saveEx();
 		
-		MHTJobEndowment[] je = MHTJobEndowment.getJobEndowment(requisition.getCtx(),requisition.getHR_Job_ID(),requisition.get_TrxName());
+		MHTJobEndowment[] je = null;
+		
+		if (IsDirect)
+			je = MHTJobEndowment.getJobEndowment(getCtx(),pC_Job_ID, get_TrxName());
+		else
+			je = MHTJobEndowment.getJobEndowment(getCtx(), requisition.getHR_Job_ID(), get_TrxName());
 		
 		for (MHTJobEndowment jobe : je) {
 			
@@ -73,7 +104,8 @@ public class CreateEmployee extends CustomProcess {
 			ee.saveEx();			
 		}	
 		
-		Integer SalaryConcept = MSysConfig.getIntValue("HR_SalaryConcept", 0,requisition.getAD_Client_ID(), partner.getAD_Org_ID());
+		Integer SalaryConcept = MSysConfig.getIntValue("HR_SalaryConcept",0,partner.getAD_Client_ID(), partner.getAD_Org_ID());
+		log.warning("ConceptoSalario="+SalaryConcept.toString());
 		
 		if (SalaryConcept==0)
 			throw new AdempiereException("Por favor configure el Salario de Concepto");
@@ -85,7 +117,10 @@ public class CreateEmployee extends CustomProcess {
 			attribute.setC_BPartner_ID(partner.get_ID());
 			attribute.setValidFrom(p_StartDate);
 			attribute.setColumnType("A");
-			attribute.setAmount(requisition.getEstimatedSalary());
+			if (p_salary.signum()>0)
+				attribute.setAmount(p_salary);
+			else
+				attribute.setAmount(requisition.getEstimatedSalary());
 			attribute.set_ValueOfColumn("HR_Region", p_HRegion);
 			attribute.saveEx();					
 				

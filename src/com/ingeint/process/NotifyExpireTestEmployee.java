@@ -74,8 +74,6 @@ public class NotifyExpireTestEmployee extends CustomProcess {
 			log.log(Level.SEVERE, sql.toString(), e);
 			return "Error en el proceso de creacion de notificacion: "+e.toString();
 		}
-
 		return null;
 	}
-
 }
