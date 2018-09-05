@@ -33,6 +33,8 @@ public class CreateEmployee extends CustomProcess {
 	BigDecimal p_salary = Env.ZERO;
 	Boolean IsDirect = false;
 	Integer pC_Job_ID = 0;
+	String p_PayrollTimeType = "";
+	BigDecimal p_PartialTimeQty;
 
 	@Override
 	protected void prepare() {
@@ -55,6 +57,11 @@ public class CreateEmployee extends CustomProcess {
 				IsDirect = para[i].getParameterAsBoolean();
 			else if (name.equals("HR_Job_ID"))
 				pC_Job_ID = para[i].getParameterAsInt();
+			else if (name.equals("PayrollTimeType"))
+				p_PayrollTimeType = para[i].getParameterAsString();
+			else if (name.equals("PartialTimeQty"))
+				p_PartialTimeQty = para[i].getParameterAsBigDecimal();
+			
 			else
 				log.log(Level.SEVERE, "Unknown Parameter: " + name);
 		}
@@ -104,8 +111,7 @@ public class CreateEmployee extends CustomProcess {
 			ee.saveEx();			
 		}	
 		
-		Integer SalaryConcept = MSysConfig.getIntValue("HR_SalaryConcept",0,partner.getAD_Client_ID(), partner.getAD_Org_ID());
-		log.warning("ConceptoSalario="+SalaryConcept.toString());
+		Integer SalaryConcept = MSysConfig.getIntValue("HR_SalaryConcept",0,requisition.getAD_Client_ID(), requisition.getAD_Org_ID());
 		
 		if (SalaryConcept==0)
 			throw new AdempiereException("Por favor configure el Salario de Concepto");
@@ -122,10 +128,37 @@ public class CreateEmployee extends CustomProcess {
 			else
 				attribute.setAmount(requisition.getEstimatedSalary());
 			attribute.set_ValueOfColumn("HR_Region", p_HRegion);
-			attribute.saveEx();					
+			attribute.saveEx();
+			
+			if (p_PayrollTimeType.equals("TP")) {
+				
+				Integer PartialTime_ID = MSysConfig.getIntValue("HR_PartialTimeConcept",0,partner.getAD_Client_ID(), partner.getAD_Org_ID());
+				Integer HR_WorkTime_ID = MSysConfig.getIntValue("HR_WorkTime",0,partner.getAD_Client_ID(), partner.getAD_Org_ID());
+								
+				X_HR_Attribute attributepartial = new X_HR_Attribute(getCtx(), 0, get_TrxName());
+				
+				attributepartial.setAD_Org_ID(partner.getAD_Org_ID());
+				attributepartial.setC_BPartner_ID(partner.get_ID());
+				attributepartial.setHR_Concept_ID(PartialTime_ID);
+				attributepartial.setValidFrom(p_StartDate);
+				attributepartial.setColumnType("Q");
+				attributepartial.setQty(p_PartialTimeQty);
+				attributepartial.saveEx();
+				
+				X_HR_Attribute attributeWorkTime = new X_HR_Attribute(getCtx(), 0, get_TrxName());
+				
+				attributeWorkTime.setAD_Org_ID(partner.getAD_Org_ID());
+				attributeWorkTime.setC_BPartner_ID(partner.get_ID());
+				attributeWorkTime.setHR_Concept_ID(HR_WorkTime_ID);
+				attributeWorkTime.setValidFrom(p_StartDate);
+				attributeWorkTime.setColumnType("Q");
+				attributeWorkTime.setQty(BigDecimal.valueOf(3));
+				attributeWorkTime.saveEx();		
+				
+			}
 				
 		List<X_HR_Payroll> xpayrolls = new Query(getCtx(), X_HR_Payroll.Table_Name,
-				"HR_Region IN (?,'AM') "
+				"HR_Region IN (?,'AM') AND IsExcludeFromPersonalRequest = 'N' "
 				+ "AND AD_Client_ID = ? ",
 				get_TrxName())
 				.setParameters(p_HRegion, getAD_Client_ID())
@@ -141,6 +174,7 @@ public class CreateEmployee extends CustomProcess {
 			employee.setHR_Job_ID(requisition.getHR_Job_ID());
 			employee.set_ValueOfColumn("HR_Region",p_HRegion);
 			employee.setHR_Payroll_ID(xpayroll.getHR_Payroll_ID());
+			employee.set_ValueOfColumn("PayrollTimeType", p_PayrollTimeType);
 			employee.saveEx();			
 		}		
 		return "Empleado creado";
