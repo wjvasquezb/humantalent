@@ -88,6 +88,7 @@ public class CreateEmployee extends CustomProcess {
 		partner.set_ValueOfColumn("ContractType", p_ContractType);
 		partner.set_ValueOfColumn("IsHRProspect", false);
 		partner.set_ValueOfColumn("StartDate", p_StartDate);
+		partner.set_ValueOfColumn("PayrollTimeType", p_PayrollTimeType);
 		partner.saveEx();
 		
 		MUser user = new MUser(partner);
@@ -111,7 +112,7 @@ public class CreateEmployee extends CustomProcess {
 			ee.saveEx();			
 		}	
 		
-		Integer SalaryConcept = MSysConfig.getIntValue("HR_SalaryConcept",0,requisition.getAD_Client_ID(), requisition.getAD_Org_ID());
+		Integer SalaryConcept = MSysConfig.getIntValue("HR_SalaryConcept",0,requisition.getAD_Client_ID());
 		
 		if (SalaryConcept==0)
 			throw new AdempiereException("Por favor configure el Salario de Concepto");
@@ -132,8 +133,15 @@ public class CreateEmployee extends CustomProcess {
 			
 			if (p_PayrollTimeType.equals("TP")) {
 				
-				Integer PartialTime_ID = MSysConfig.getIntValue("HR_PartialTimeConcept",0,partner.getAD_Client_ID(), partner.getAD_Org_ID());
-				Integer HR_WorkTime_ID = MSysConfig.getIntValue("HR_WorkTime",0,partner.getAD_Client_ID(), partner.getAD_Org_ID());
+				Integer PartialTime_ID = MSysConfig.getIntValue("HR_PartialTimeConcept",0,partner.getAD_Client_ID());
+				
+				if (PartialTime_ID==0)
+					throw new AdempiereException("Por favor configure el Sysconfig HR_PartialTimeConcept para su grupo empresarial.");
+				
+				Integer HR_WorkTime_ID = MSysConfig.getIntValue("HR_WorkTime",0,partner.getAD_Client_ID());
+				
+				if (HR_WorkTime_ID==0)
+					throw new AdempiereException("Por favor configure el Sysconfig HR_WorkTime para su Grupo Empresarial. ");
 								
 				X_HR_Attribute attributepartial = new X_HR_Attribute(getCtx(), 0, get_TrxName());
 				
@@ -174,7 +182,6 @@ public class CreateEmployee extends CustomProcess {
 			employee.setHR_Job_ID(requisition.getHR_Job_ID());
 			employee.set_ValueOfColumn("HR_Region",p_HRegion);
 			employee.setHR_Payroll_ID(xpayroll.getHR_Payroll_ID());
-			employee.set_ValueOfColumn("PayrollTimeType", p_PayrollTimeType);
 			employee.saveEx();			
 		}		
 		return "Empleado creado";
