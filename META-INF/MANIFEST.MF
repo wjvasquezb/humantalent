@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Human Talent
-Bundle-SymbolicName: ve.net.dcs.HumanTalent;singleton:=true
-Bundle-Version: 5.1.0.qualifer
-Bundle-Vendor: INGEINT SA - DoubleClickSistemas
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.adempiere.base;bundle-version="5.1.0",
- org.adempiere.base.process;bundle-version="5.1.0",
- org.adempiere.plugin.utils;bundle-version="5.1.0",
- org.adempiere.ui.zk;bundle-version="5.1.0",
+Bundle-Name: com.ingeint.human.talent
+Bundle-SymbolicName: com.ingeint.human.talent;singleton:=true
+Bundle-Version: 7.1.0.qualifier
+Bundle-Vendor: INGEINT SA
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.adempiere.base;bundle-version="7.1.0",
+ org.adempiere.plugin.utils;bundle-version="7.1.0",
+ org.adempiere.base.process;bundle-version="7.1.0",
+ org.adempiere.ui.zk;bundle-version="7.1.0",
  zk;bundle-version="8.0.2"
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/ve.net.dcs.component.HTModelFactory.xml, OSGI-INF/com.ingeint.component.ProcessFactory.xml, OSGI-INF/com.ingeint.component.ModelFactory.xml,
