@@ -36,7 +36,7 @@ public class NotifyExpireTestEmployee extends CustomProcess {
 	protected String doIt() throws Exception {
 
 		StringBuffer sql = new StringBuffer("SELECT c_bpartner_id, days, startdate, enddate, toexpire, responsable_ID "
-				+ "FROM ING_EmployeeToExpire WHERE AD_Client_ID = ? AND days>0 ");
+				+ "FROM ING_EmployeeToExpire WHERE AD_Client_ID = ? AND days > 0 AND IsNotified = 'N' ");
 
 		try
 		{
@@ -62,8 +62,13 @@ public class NotifyExpireTestEmployee extends CustomProcess {
 				if (Responsable_ID==-1)
 					Responsable_ID = MSysConfig.getIntValue("ResponsableForEmployeeExpire", 0, getAD_Client_ID(), partner.getAD_Org_ID());
 
-				Utils.createRequest(getCtx(), partner.getAD_Org_ID(), partner.get_Table_ID(), partner.get_ID(), RequestType_ID,
+				String result = Utils.createRequest(getCtx(), partner.getAD_Org_ID(), partner.get_Table_ID(), partner.get_ID(), RequestType_ID,
 						content.toString(), Responsable_ID, partner.get_ID(), false, get_TrxName());
+				
+				if (result.length()>0) {
+					partner.set_ValueOfColumn("IsNotified", true);
+					partner.saveEx();
+				}				
 			}
 
 			rs.close();
